@@ -4,26 +4,30 @@ import { User } from "./User.entity";
 
 @Entity()
 export class Token {
-    @PrimaryKey({type: 'uuid'})
-    id = v4();
+  @PrimaryKey({ type: "uuid" })
+  id = v4();
 
+  @Property()
+  token: string;
 
-    @Property()
-    token: string;
+  @Property()
+  created_at: number;
 
-    @Property()
-    created_at: Date;
+  @Property()
+  expires_at: number;
 
-    @Property()
-    expires_at: Date;
+  @ManyToOne(() => User)
+  User!: User;
 
-    @ManyToOne(() => User)
-    User!: User
-
-
-    constructor( token: string, created_at: Date, expires_at: Date){
-        this.token = token;
-        this.created_at = created_at;
-        this.expires_at = expires_at
-    }
+  constructor(
+    token: string,
+    created_at: number,
+    expires_at: number,
+    user: User
+  ) {
+    this.token = token;
+    this.created_at = created_at;
+    this.expires_at = expires_at;
+    this.User = user;
+  }
 }

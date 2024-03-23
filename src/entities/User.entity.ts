@@ -4,6 +4,7 @@ import {
   OneToMany,
   PrimaryKey,
   Property,
+  Unique,
 } from "@mikro-orm/mysql";
 import { v4 } from "uuid";
 import { Contacts } from "./Contacts.entity";
@@ -16,6 +17,7 @@ export class User {
   id = v4();
 
   @Property()
+  @Unique()
   name!: string;
 
   @Property()
