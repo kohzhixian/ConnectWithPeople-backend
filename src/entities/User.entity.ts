@@ -21,6 +21,7 @@ export class User {
   name!: string;
 
   @Property()
+  @Unique()
   phone_number!: number;
 
   @Property()
