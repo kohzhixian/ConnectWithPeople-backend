@@ -123,13 +123,11 @@ async function login(loginDto: loginDto) {
     decodedRefreshToken.exp ? decodedRefreshToken.exp : 0,
     existingUser
   );
-  console.log("decodedRefreshToken: ", decodedRefreshToken);
 
   try {
     em.persist(newRefreshToken);
     await em.flush();
   } catch (err) {
-    console.error("error: ", err);
     throw new HttpError(
       500,
       "Failed to create refresh token due to internal error"
