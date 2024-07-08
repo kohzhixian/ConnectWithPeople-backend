@@ -7,7 +7,7 @@ export class Token {
   @PrimaryKey({ type: "uuid" })
   id = v4();
 
-  @Property()
+  @Property({ columnType: "varchar(1024)" })
   token: string;
 
   @Property()
@@ -15,6 +15,9 @@ export class Token {
 
   @Property()
   expires_at: number;
+
+  @Property({ type: "boolean", default: false })
+  isDeleted: boolean = false;
 
   @ManyToOne(() => User)
   User!: User;

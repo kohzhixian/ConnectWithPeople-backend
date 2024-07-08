@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 export default function expressLoader() {
   const app = express();
@@ -7,6 +8,8 @@ export default function expressLoader() {
   // middleware that transforms raw string of req.body into json
   app.use(express.json());
 
+  // middleware that will parse the cookie header on the request
+  app.use(cookieParser());
   // enables Cross-Origin Resource sharing
   app.use(cors());
 

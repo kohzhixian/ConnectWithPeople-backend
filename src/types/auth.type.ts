@@ -11,7 +11,12 @@ export interface loginDto {
 }
 
 export interface tokenDataType {
+  userId: string;
   username: string;
   name: string;
   phone_number: number;
+}
+
+export interface refreshTokenDto {
+  userId: string;
 }
