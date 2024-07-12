@@ -11,7 +11,13 @@ export default function expressLoader() {
   // middleware that will parse the cookie header on the request
   app.use(cookieParser());
   // enables Cross-Origin Resource sharing
-  app.use(cors());
+  const allowedOrigins = ["http://localhost:5173"];
+  app.use(
+    cors({
+      origin: allowedOrigins,
+      credentials: true, // Enable credentials (cookies, authorization headers, TLS client certificates)
+    })
+  );
 
   // respond to all preflight OPTIONS requests for any path with appropriate CORS headers
   app.options("*", cors());

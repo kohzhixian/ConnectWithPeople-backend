@@ -87,7 +87,7 @@ async function login(loginDto: loginDto) {
   let signedToken;
   try {
     signedToken = jwt.sign(tokenData, String(process.env.JWT_TOKEN_SECRET), {
-      expiresIn: "1800s",
+      expiresIn: "60s",
     });
   } catch (err) {
     throw new HttpError(500, "Token creation failed.");

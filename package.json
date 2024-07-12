@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "tsc && nodemon index.ts"
+    "dev": "tsc && nodemon index.ts"
   },
   "author": "",
   "license": "ISC",

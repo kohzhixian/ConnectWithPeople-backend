@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError } from "./httpError.middleware";
 import jwt from "jsonwebtoken";
+import { StatusCode } from "../constants/global/global.constats";
 
 require("dotenv").config({ path: ".env.dev" });
 export default async function jwtMiddleware(
@@ -15,10 +16,20 @@ export default async function jwtMiddleware(
     return next(new HttpError(401, "No token found."));
   }
   try {
-    const userObj = jwt.verify(token, String(process.env.JWT_TOKEN_SECRET));
+    jwt.verify(token, String(process.env.JWT_TOKEN_SECRET));
     next();
   } catch (err) {
-    const error = new HttpError(403, "Invalid token");
-    return next(error);
+    if (err instanceof jwt.TokenExpiredError) {
+      return next(new HttpError(StatusCode.UNAUTHORIZED, "Token has expired."));
+    } else if (err instanceof jwt.JsonWebTokenError) {
+      return next(new HttpError(StatusCode.FORBIDDEN, "Invalid token."));
+    } else {
+      return next(
+        new HttpError(
+          StatusCode.INTERNAL_SERVER_ERROR,
+          "Internal server error."
+        )
+      );
+    }
   }
 }
