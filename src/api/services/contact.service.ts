@@ -60,6 +60,33 @@ async function addContact(addContactDto: AddContactDtoType) {
   return "Contact added successfully";
 }
 
+async function getContactsByUserId(userId: string) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+
+  const loggedInUser = await em.findOne(
+    User,
+    {
+      id: userId,
+    },
+    { populate: ["contacts"] }
+  );
+
+  if (!loggedInUser) {
+    throw new HttpError(StatusCode.NOT_FOUND, "User does not exist");
+  }
+
+  const response = loggedInUser.contacts.getItems().map((contact) => {
+    return {
+      contact_name: contact.name,
+      contact_phone_num: contact.phone_num,
+    };
+  });
+
+  return response;
+}
+
 export default {
   addContact,
+  getContactsByUserId,
 };

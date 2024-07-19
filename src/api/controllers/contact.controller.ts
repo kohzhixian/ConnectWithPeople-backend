@@ -18,6 +18,22 @@ async function addContact(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function getContactsByUserId(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const userId = await getUserIdFromToken(req, res);
+  try {
+    const response = await contactService.getContactsByUserId(userId);
+    res.status(StatusCode.OK).send(response);
+  } catch (err) {
+    console.error(err);
+    return next(err);
+  }
+}
+
 export default {
   addContact,
+  getContactsByUserId,
 };
