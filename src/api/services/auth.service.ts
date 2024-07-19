@@ -1,7 +1,7 @@
 import { EntityManager, MikroORM } from "@mikro-orm/mysql";
 import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { StatusCode } from "../../constants/global/global.constats";
+import { StatusCode } from "../../constants/global/global.constants";
 import { Token } from "../../entities/Token.entity";
 import { User } from "../../entities/User.entity";
 import databaseLoader from "../../loaders/database.loader";

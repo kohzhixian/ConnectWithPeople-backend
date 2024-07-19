@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpError } from "./httpError.middleware";
 import jwt from "jsonwebtoken";
-import { StatusCode } from "../constants/global/global.constats";
+import { StatusCode } from "../constants/global/global.constants";
 
 require("dotenv").config({ path: ".env.dev" });
 export default async function jwtMiddleware(

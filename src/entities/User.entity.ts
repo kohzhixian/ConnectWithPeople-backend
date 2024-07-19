@@ -1,6 +1,7 @@
 import {
   Collection,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryKey,
   Property,
@@ -33,7 +34,7 @@ export class User {
   @Property()
   created_at!: Date;
 
-  @OneToMany(() => Contacts, (contact) => contact.User)
+  @ManyToMany(() => Contacts, (contact) => contact.users)
   contacts = new Collection<Contacts>(this);
 
   @OneToMany(() => Message, (message) => message.User)

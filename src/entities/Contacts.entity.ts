@@ -1,29 +1,29 @@
-import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/mysql";
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  PrimaryKey,
+  Property,
+} from "@mikro-orm/mysql";
 import { v4 } from "uuid";
 import { User } from "./User.entity";
-import { Message } from "./Message.entity";
 
 @Entity()
 export class Contacts {
-    @PrimaryKey({type: 'uuid'})
-    id = v4();
+  @PrimaryKey({ type: "uuid" })
+  id = v4();
 
-    @Property()
-    name: string;
+  @Property()
+  name: string;
 
-    @Property()
-    phone_num: number;
+  @Property()
+  phone_num: number;
 
-    @ManyToOne(() => User)
-    User!: User
+  @ManyToMany(() => User, (user) => user.contacts, { owner: true })
+  users = new Collection<User>(this);
 
-    @OneToMany(() => Message, message => message.Contacts)
-    messages = new Collection<Message>(this)
-
-
-    constructor(name: string, phone_num:number){
-        this.name = name;
-        this.phone_num = phone_num
-    }
-
+  constructor(name: string, phone_num: number) {
+    this.name = name;
+    this.phone_num = phone_num;
+  }
 }

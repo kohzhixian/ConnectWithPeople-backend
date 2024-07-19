@@ -21,6 +21,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const loginDto: loginDto = req.body;
     const tokenData = await authService.login(loginDto);
+
     res.status(200).send({ tokenData: tokenData });
   } catch (err) {
     return next(err);
