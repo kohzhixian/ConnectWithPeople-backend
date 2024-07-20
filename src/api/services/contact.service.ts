@@ -1,11 +1,14 @@
 import { EntityManager, MikroORM } from "@mikro-orm/core";
-import databaseLoader from "../../loaders/database.loader";
-import { Contacts } from "../../entities/Contacts.entity";
-import { AddContactDtoType } from "../../types/contact.type";
-import { HttpError } from "../../middleware/httpError.middleware";
 import { StatusCode } from "../../constants/global/global.constants";
-import to from "../../utils/promiseHelpers";
+import { Contacts } from "../../entities/Contacts.entity";
 import { User } from "../../entities/User.entity";
+import databaseLoader from "../../loaders/database.loader";
+import { HttpError } from "../../middleware/httpError.middleware";
+import {
+  AddContactDtoType,
+  getContactByUserIdResponseType,
+} from "../../types/contact.type";
+import to from "../../utils/promiseHelpers";
 
 async function addContact(addContactDto: AddContactDtoType) {
   const orm: MikroORM = await databaseLoader();
@@ -76,14 +79,35 @@ async function getContactsByUserId(userId: string) {
     throw new HttpError(StatusCode.NOT_FOUND, "User does not exist");
   }
 
-  const response = loggedInUser.contacts.getItems().map((contact) => {
-    return {
-      contact_name: contact.name,
-      contact_phone_num: contact.phone_num,
-    };
-  });
+  const allContacts = loggedInUser.contacts.getItems();
 
-  return response;
+  interface formattedContact {
+    key: string;
+    contact: getContactByUserIdResponseType[];
+  }
+
+  const formattedContact: formattedContact[] = [];
+
+  for (let i = 0; i < 26; i++) {
+    const alphabet = String.fromCharCode(65 + i); // 65 is the ASCII for 'A'
+    allContacts.map((contact) => {
+      const slicedContactName = contact.name.toUpperCase().slice(0, 1);
+      const sortedContact: getContactByUserIdResponseType[] = [];
+      if (slicedContactName === alphabet) {
+        sortedContact.push({
+          contact_name: contact.name,
+          contact_phone_num: contact.phone_num,
+        });
+
+        formattedContact.push({
+          key: alphabet,
+          contact: sortedContact,
+        });
+      }
+    });
+  }
+
+  return formattedContact;
 }
 
 export default {
