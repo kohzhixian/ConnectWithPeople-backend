@@ -6,8 +6,8 @@ import databaseLoader from "../../loaders/database.loader";
 import { HttpError } from "../../middleware/httpError.middleware";
 import {
   AddContactDtoType,
+  alphabetObjType,
   formattedContact,
-  getContactByUserIdResponseType,
 } from "../../types/contact.type";
 import to from "../../utils/promiseHelpers";
 
@@ -83,23 +83,30 @@ async function getContactsByUserId(userId: string) {
   const allContacts = loggedInUser.contacts.getItems();
 
   const formattedContact: formattedContact[] = [];
+  const alphabetObj: alphabetObjType = {};
 
+  // create alphabet obj with empty arrays
   for (let i = 0; i < 26; i++) {
     const alphabet = String.fromCharCode(65 + i); // 65 is the ASCII for 'A'
-    allContacts.map((contact) => {
-      const slicedContactName = contact.name.toUpperCase().slice(0, 1);
-      const sortedContact: getContactByUserIdResponseType[] = [];
-      if (slicedContactName === alphabet) {
-        sortedContact.push({
-          contact_name: contact.name,
-          contact_phone_num: contact.phone_num,
-        });
+    alphabetObj[alphabet] = [];
+  }
 
-        formattedContact.push({
-          key: alphabet,
-          contact: sortedContact,
-        });
-      }
+  // populate alphabet obj with contacts
+  allContacts.map((contact) => {
+    const slicedContactName = contact.name.toUpperCase().slice(0, 1);
+    if (alphabetObj[slicedContactName]) {
+      alphabetObj[slicedContactName].push({
+        contact_name: contact.name,
+        contact_phone_num: contact.phone_num,
+      });
+    }
+  });
+
+  // convert alphaobj to an array
+  for (const key in alphabetObj) {
+    formattedContact.push({
+      key,
+      contact: alphabetObj[key],
     });
   }
 

@@ -12,6 +12,10 @@ export interface getContactByUserIdResponseType {
   contact_phone_num: number;
 }
 
+export interface alphabetObjType {
+  [key: string]: getContactByUserIdResponseType[];
+}
+
 export interface formattedContact {
   key: string;
   contact: getContactByUserIdResponseType[];
