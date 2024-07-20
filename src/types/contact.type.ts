@@ -11,3 +11,8 @@ export interface getContactByUserIdResponseType {
   contact_name: string;
   contact_phone_num: number;
 }
+
+export interface formattedContact {
+  key: string;
+  contact: getContactByUserIdResponseType[];
+}

@@ -6,6 +6,7 @@ import databaseLoader from "../../loaders/database.loader";
 import { HttpError } from "../../middleware/httpError.middleware";
 import {
   AddContactDtoType,
+  formattedContact,
   getContactByUserIdResponseType,
 } from "../../types/contact.type";
 import to from "../../utils/promiseHelpers";
@@ -80,11 +81,6 @@ async function getContactsByUserId(userId: string) {
   }
 
   const allContacts = loggedInUser.contacts.getItems();
-
-  interface formattedContact {
-    key: string;
-    contact: getContactByUserIdResponseType[];
-  }
 
   const formattedContact: formattedContact[] = [];
 
