@@ -27,7 +27,7 @@ async function addContact(addContactDto: AddContactDtoType) {
 
   // check if added user exists in User table
   const existingUser = await em.findOne(User, {
-    phone_number: addContactDto.addContactReqBody.phone_num,
+    phone_num: addContactDto.addContactReqBody.phone_num,
   });
 
   if (!existingUser) {

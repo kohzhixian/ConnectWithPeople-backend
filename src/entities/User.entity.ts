@@ -11,6 +11,7 @@ import { v4 } from "uuid";
 import { Contacts } from "./Contacts.entity";
 import { Message } from "./Message.entity";
 import { Token } from "./Token.entity";
+import { Chatroom } from "./Chatroom.entity";
 
 @Entity()
 export class User {
@@ -23,7 +24,7 @@ export class User {
 
   @Property()
   @Unique()
-  phone_number!: number;
+  phone_num!: number;
 
   @Property()
   username!: string;
@@ -31,8 +32,11 @@ export class User {
   @Property()
   password!: string;
 
-  @Property()
+  @Property({ onCreate: () => new Date() })
   created_at!: Date;
+
+  @Property({ onUpdate: () => new Date() })
+  updated_at!: Date;
 
   @ManyToMany(() => Contacts, (contact) => contact.users)
   contacts = new Collection<Contacts>(this);
@@ -43,17 +47,18 @@ export class User {
   @OneToMany(() => Token, (token) => token.User)
   tokens = new Collection<Token>(this);
 
+  @ManyToMany(() => Chatroom, (chatroom) => chatroom.users, { owner: true })
+  chatrooms = new Collection<Chatroom>(this);
+
   constructor(
     name: string,
     phone_number: number,
     username: string,
-    password: string,
-    created_at: Date
+    password: string
   ) {
     this.name = name;
-    this.phone_number = phone_number;
+    this.phone_num = phone_number;
     this.username = username;
     this.password = password;
-    this.created_at = created_at;
   }
 }

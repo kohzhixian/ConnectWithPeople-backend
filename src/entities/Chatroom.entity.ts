@@ -4,20 +4,20 @@ import {
   ManyToMany,
   PrimaryKey,
   Property,
-} from "@mikro-orm/mysql";
+} from "@mikro-orm/core";
 import { v4 } from "uuid";
 import { User } from "./User.entity";
 
 @Entity()
-export class Contacts {
+export class Chatroom {
   @PrimaryKey({ type: "uuid" })
   id = v4();
 
   @Property()
-  name: string;
+  chatroom_name!: string;
 
   @Property()
-  phone_num: number;
+  chatroom_icon!: string;
 
   @Property({ onCreate: () => new Date() })
   created_at!: Date;
@@ -25,11 +25,11 @@ export class Contacts {
   @Property({ onUpdate: () => new Date() })
   updated_at!: Date;
 
-  @ManyToMany(() => User, (user) => user.contacts, { owner: true })
+  @ManyToMany(() => User, (user) => user.chatrooms)
   users = new Collection<User>(this);
 
-  constructor(name: string, phone_num: number) {
-    this.name = name;
-    this.phone_num = phone_num;
+  constructor(chatroom_name: string, chatroom_icon: string) {
+    this.chatroom_name = chatroom_name;
+    this.chatroom_icon = chatroom_icon;
   }
 }

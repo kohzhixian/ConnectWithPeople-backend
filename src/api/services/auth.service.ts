@@ -19,13 +19,11 @@ async function register(registerDto: registerDto) {
       registerDto.password,
       Number(process.env.ENCRYPTION_SALT_ROUNDS)
     );
-    const currentDate = new Date();
     const newUser = new User(
       registerDto.name,
       registerDto.phone_number,
       registerDto.username,
-      encryptedPassword,
-      currentDate
+      encryptedPassword
     );
 
     //check for existing user
@@ -81,7 +79,7 @@ async function login(loginDto: loginDto) {
     userId: existingUser.id,
     username: existingUser.username,
     name: existingUser.name,
-    phone_number: existingUser.phone_number,
+    phone_number: existingUser.phone_num,
   };
 
   let signedToken;
