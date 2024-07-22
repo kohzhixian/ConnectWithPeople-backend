@@ -41,14 +41,14 @@ export class User {
   @ManyToMany(() => Contacts, (contact) => contact.users)
   contacts = new Collection<Contacts>(this);
 
-  @OneToMany(() => Message, (message) => message.User)
-  messages = new Collection<Message>(this);
-
   @OneToMany(() => Token, (token) => token.User)
   tokens = new Collection<Token>(this);
 
   @ManyToMany(() => Chatroom, (chatroom) => chatroom.users, { owner: true })
   chatrooms = new Collection<Chatroom>(this);
+
+  @ManyToMany(() => Message, (message) => message.users)
+  messages = new Collection<Message>(this);
 
   constructor(
     name: string,

@@ -1,7 +1,12 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/mysql";
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  PrimaryKey,
+  Property,
+} from "@mikro-orm/mysql";
 import { v4 } from "uuid";
 import { User } from "./User.entity";
-import { Contacts } from "./Contacts.entity";
 
 @Entity()
 export class Message {
@@ -9,34 +14,26 @@ export class Message {
   id = v4();
 
   @Property()
-  sender: number;
+  user_id!: string;
 
-  @Property()
-  receiver: number;
-
-  @Property()
-  message: string;
+  @Property({ length: 1024 })
+  text!: string;
 
   @Property()
   status: string;
 
-  @Property()
-  created_date: Date;
+  @Property({ onCreate: () => new Date() })
+  created_at!: Date;
 
-  @ManyToOne(() => User)
-  User!: User;
+  @Property({ onUpdate: () => new Date() })
+  updated_at!: Date;
 
-  constructor(
-    sender: number,
-    receiver: number,
-    message: string,
-    status: string,
-    created_date: Date
-  ) {
-    this.sender = sender;
-    this.receiver = receiver;
-    this.message = message;
+  @ManyToMany(() => User, (user) => user.messages)
+  users = new Collection<User>(this);
+
+  constructor(user_id: string, text: string, status: string) {
+    this.user_id = user_id;
+    this.text = text;
     this.status = status;
-    this.created_date = created_date;
   }
 }
