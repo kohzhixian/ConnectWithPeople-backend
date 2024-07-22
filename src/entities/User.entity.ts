@@ -35,7 +35,7 @@ export class User {
   @Property({ onCreate: () => new Date() })
   created_at!: Date;
 
-  @Property({ onUpdate: () => new Date() })
+  @Property({ onCreate: () => new Date(), onUpdate: () => new Date() })
   updated_at!: Date;
 
   @ManyToMany(() => Contacts, (contact) => contact.users)
@@ -47,7 +47,7 @@ export class User {
   @ManyToMany(() => Chatroom, (chatroom) => chatroom.users, { owner: true })
   chatrooms = new Collection<Chatroom>(this);
 
-  @ManyToMany(() => Message, (message) => message.users)
+  @ManyToMany(() => Message, (message) => message.users, { owner: true })
   messages = new Collection<Message>(this);
 
   constructor(

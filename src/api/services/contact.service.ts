@@ -110,6 +110,8 @@ async function getContactsByUserId(userId: string) {
     });
   }
 
+  await orm.close();
+
   return formattedContact;
 }
 

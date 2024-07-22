@@ -22,7 +22,7 @@ export class Contacts {
   @Property({ onCreate: () => new Date() })
   created_at!: Date;
 
-  @Property({ onUpdate: () => new Date() })
+  @Property({ onCreate: () => new Date(), onUpdate: () => new Date() })
   updated_at!: Date;
 
   @ManyToMany(() => User, (user) => user.contacts, { owner: true })
