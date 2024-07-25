@@ -4,6 +4,7 @@ import jwtMiddleware from "../middleware/jwt.middleware";
 import testProtectedRoute from "../api/routes/testProtected.route";
 import contactRoute from "../api/routes/contact.route";
 import messageRoute from "../api/routes/message.rotue";
+import chatroomRoute from "../api/routes/chatroom.route";
 
 export default function routesLoader(app: Express) {
   app.use("/api/v1/auth", authRoute);
@@ -11,4 +12,5 @@ export default function routesLoader(app: Express) {
   app.use("/api/v1", testProtectedRoute);
   app.use("/api/v1/contact", contactRoute);
   app.use("/api/v1/message", messageRoute);
+  app.use("/api/v1/chatroom", chatroomRoute);
 }

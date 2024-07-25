@@ -47,7 +47,7 @@ export class User {
   @ManyToMany(() => Chatroom, (chatroom) => chatroom.users, { owner: true })
   chatrooms = new Collection<Chatroom>(this);
 
-  @ManyToMany(() => Message, (message) => message.users, { owner: true })
+  @OneToMany(() => Message, (message) => message.user)
   messages = new Collection<Message>(this);
 
   constructor(

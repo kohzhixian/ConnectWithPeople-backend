@@ -2,11 +2,13 @@ import {
   Collection,
   Entity,
   ManyToMany,
+  OneToMany,
   PrimaryKey,
   Property,
 } from "@mikro-orm/core";
 import { v4 } from "uuid";
 import { User } from "./User.entity";
+import { Message } from "./Message.entity";
 
 @Entity()
 export class Chatroom {
@@ -27,6 +29,9 @@ export class Chatroom {
 
   @ManyToMany(() => User, (user) => user.chatrooms)
   users = new Collection<User>(this);
+
+  @OneToMany(() => Message, (message) => message.chatroom)
+  messages = new Collection<Message>(this);
 
   constructor(chatroom_name: string, chatroom_icon: string) {
     this.chatroom_name = chatroom_name;
