@@ -7,6 +7,7 @@ import { StatusCode } from "../../constants/global/global.constants";
 import { Message } from "../../entities/Message.entity";
 import { MessageStatus } from "../../constants/message/message.constants";
 import to from "../../utils/promiseHelpers";
+import { Chatroom } from "../../entities/Chatroom.entity";
 
 async function createMessage(createMessageDto: createMessageDtoType) {
   const orm: MikroORM = await databaseLoader();
@@ -23,13 +24,20 @@ async function createMessage(createMessageDto: createMessageDtoType) {
   const messageStatus = MessageStatus.SENT;
 
   const newMessage = new Message(
-    createMessageDto.user_id,
-    createMessageDto.user_id,
+    createMessageDto.createMessageReqBody.text,
     messageStatus
   );
 
-  // link new message to user
-  existingUser.messages.add(newMessage);
+  const existingChatroom = await em.findOne(Chatroom, {
+    id: createMessageDto.createMessageReqBody.chatroom_id,
+  });
+
+  if (!existingChatroom) {
+    throw new HttpError(StatusCode.NOT_FOUND, "Chat room not found");
+  }
+
+  newMessage.user = existingUser;
+  newMessage.chatroom = existingChatroom;
 
   const [err, res] = await to(em.persistAndFlush(newMessage));
 

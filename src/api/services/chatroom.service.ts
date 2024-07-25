@@ -50,7 +50,7 @@ async function createChatroom(createChatroomDto: createChatroomDtoType) {
       "Something went wrong while creating chat room"
     );
   }
-
+  await orm.close();
   return "Chatroom created";
 }
 

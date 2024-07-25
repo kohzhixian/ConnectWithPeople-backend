@@ -2,19 +2,18 @@ import {
   Collection,
   Entity,
   ManyToMany,
+  ManyToOne,
   PrimaryKey,
   Property,
 } from "@mikro-orm/mysql";
 import { v4 } from "uuid";
 import { User } from "./User.entity";
+import { Chatroom } from "./Chatroom.entity";
 
 @Entity()
 export class Message {
   @PrimaryKey({ type: "uuid" })
   id = v4();
-
-  @Property()
-  user_id!: string;
 
   @Property({ length: 1024 })
   text!: string;
@@ -28,11 +27,13 @@ export class Message {
   @Property({ onCreate: () => new Date(), onUpdate: () => new Date() })
   updated_at!: Date;
 
-  @ManyToMany(() => User, (user) => user.messages)
-  users = new Collection<User>(this);
+  @ManyToOne(() => Chatroom)
+  chatroom!: Chatroom;
 
-  constructor(user_id: string, text: string, status: string) {
-    this.user_id = user_id;
+  @ManyToOne(() => User)
+  user!: User;
+
+  constructor(text: string, status: string) {
     this.text = text;
     this.status = status;
   }

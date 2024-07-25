@@ -128,7 +128,6 @@ async function login(loginDto: loginDto) {
     em.persist(newRefreshToken);
     await em.flush();
   } catch (err) {
-    console.error(err);
     throw new HttpError(
       500,
       "Failed to create refresh token due to internal error"
@@ -177,6 +176,8 @@ async function refreshToken(userId: string) {
     }
   );
 
+  await orm.close();
+
   return newAccessToken;
 }
 
@@ -194,6 +195,7 @@ async function logout(userId: string) {
     await em.persistAndFlush(existingToken);
   }
 
+  await orm.close();
   return "logout successful";
 }
 
