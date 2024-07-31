@@ -54,6 +54,26 @@ async function createChatroom(createChatroomDto: createChatroomDtoType) {
   return "Chatroom created";
 }
 
+async function getAllChatroomByUserId(userId: string) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+
+  const existingUser = await em.findOne(User, {
+    id: userId,
+  });
+
+  if (!existingUser) {
+    throw new HttpError(StatusCode.NOT_FOUND, "User not found");
+  }
+
+  const allChatroom = await em.find(Chatroom, {
+    users: existingUser,
+  });
+
+  return allChatroom;
+}
+
 export default {
   createChatroom,
+  getAllChatroomByUserId,
 };
