@@ -1,6 +1,9 @@
 import { EntityManager, MikroORM } from "@mikro-orm/mysql";
 import databaseLoader from "../../loaders/database.loader";
-import { createMessageDtoType } from "../../types/message.type";
+import {
+  createMessageDtoType,
+  getAllMessageByChatroomIdDtoType,
+} from "../../types/message.type";
 import { User } from "../../entities/User.entity";
 import { HttpError } from "../../middleware/httpError.middleware";
 import { StatusCode } from "../../constants/global/global.constants";
@@ -53,6 +56,29 @@ async function createMessage(createMessageDto: createMessageDtoType) {
   return "message created";
 }
 
+async function getAllMessageByChatroomId(
+  getAllMessageByChatroomIdDto: getAllMessageByChatroomIdDtoType
+) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+
+  const existingChatroom = await em.findOne(Chatroom, {
+    id: getAllMessageByChatroomIdDto.chatroom_id,
+  });
+
+  if (!existingChatroom) {
+    throw new HttpError(StatusCode.NOT_FOUND, "Chatroom not found");
+  }
+
+  const allMessages = await em.find(Message, {
+    chatroom: existingChatroom,
+  });
+
+  await orm.close();
+  return allMessages;
+}
+
 export default {
   createMessage,
+  getAllMessageByChatroomId,
 };

@@ -38,7 +38,6 @@ async function createChatroom(createChatroomDto: createChatroomDtoType) {
   }
 
   for (const user of usersInChatroom) {
-    console.log(user);
     newChatroom.users.add(user);
   }
 
@@ -70,6 +69,7 @@ async function getAllChatroomByUserId(userId: string) {
     users: existingUser,
   });
 
+  await orm.close();
   return allChatroom;
 }
 
