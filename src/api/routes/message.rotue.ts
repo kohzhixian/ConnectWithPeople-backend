@@ -9,4 +9,9 @@ router.get(
   messageController.getAllMessageByChatroomId
 );
 
+router.get(
+  "/getAllMessageLinkedToUser",
+  messageController.getAllMessageLinkedToUser
+);
+
 export default router;

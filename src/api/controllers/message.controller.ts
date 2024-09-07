@@ -18,16 +18,29 @@ async function createMessage(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function getAllMessageLinkedToUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user_id = await getUserIdFromToken(req, res);
+  try {
+    const response = await messageService.getAllMessageByChatroomId(user_id);
+    res.status(StatusCode.OK).send(response);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 async function getAllMessageByChatroomId(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const getAllMessageByChatroomIdDto =
-    req.body as getAllMessageByChatroomIdDtoType;
+  const chatroomId = req.query.ChatroomId;
   try {
     const response = await messageService.getAllMessageByChatroomId(
-      getAllMessageByChatroomIdDto
+      String(chatroomId)
     );
     res.status(StatusCode.OK).send(response);
   } catch (err) {
@@ -37,5 +50,6 @@ async function getAllMessageByChatroomId(
 
 export default {
   createMessage,
+  getAllMessageLinkedToUser,
   getAllMessageByChatroomId,
 };

@@ -56,14 +56,29 @@ async function createMessage(createMessageDto: createMessageDtoType) {
   return "message created";
 }
 
-async function getAllMessageByChatroomId(
-  getAllMessageByChatroomIdDto: getAllMessageByChatroomIdDtoType
-) {
+async function getAllMessageLinkedToUser(userId: string) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+
+  const existingUser = await em.findOne(User, {
+    id: userId,
+  });
+
+  if (!existingUser) {
+    throw new HttpError(StatusCode.NOT_FOUND, "User not found");
+  }
+
+  const allChatroomLinkedToUser = existingUser.chatrooms.getItems();
+
+  console.log("all chat rooms: ", allChatroomLinkedToUser);
+}
+
+async function getAllMessageByChatroomId(chatroom_id: string) {
   const orm: MikroORM = await databaseLoader();
   const em: EntityManager = orm.em.fork();
 
   const existingChatroom = await em.findOne(Chatroom, {
-    id: getAllMessageByChatroomIdDto.chatroom_id,
+    id: chatroom_id,
   });
 
   if (!existingChatroom) {
@@ -80,5 +95,6 @@ async function getAllMessageByChatroomId(
 
 export default {
   createMessage,
+  getAllMessageLinkedToUser,
   getAllMessageByChatroomId,
 };
