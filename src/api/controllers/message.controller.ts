@@ -25,7 +25,7 @@ async function getAllMessageLinkedToUser(
 ) {
   const user_id = await getUserIdFromToken(req, res);
   try {
-    const response = await messageService.getAllMessageByChatroomId(user_id);
+    const response = await messageService.getAllMessageLinkedToUser(user_id);
     res.status(StatusCode.OK).send(response);
   } catch (err) {
     return next(err);

@@ -60,8 +60,9 @@ async function getAllMessageLinkedToUser(userId: string) {
   const orm: MikroORM = await databaseLoader();
   const em: EntityManager = orm.em.fork();
 
-  const existingUser = await em.findOne(User, {
-    id: userId,
+  // fetch user and chatrooms linked to user
+  const existingUser = await em.findOne(User, userId, {
+    populate: ["chatrooms"],
   });
 
   if (!existingUser) {
@@ -70,7 +71,11 @@ async function getAllMessageLinkedToUser(userId: string) {
 
   const allChatroomLinkedToUser = existingUser.chatrooms.getItems();
 
-  console.log("all chat rooms: ", allChatroomLinkedToUser);
+  const allMessages = await em.find(Message, {
+    chatroom: allChatroomLinkedToUser,
+  });
+
+  return allMessages;
 }
 
 async function getAllMessageByChatroomId(chatroom_id: string) {
