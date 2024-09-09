@@ -102,26 +102,22 @@ async function getAllMessageByChatroomId(chatroom_id: string) {
 async function getLatestMsgForAllChatroomLinkedToUser(allMessages: Message[]) {
   const orm: MikroORM = await databaseLoader();
   const em: EntityManager = orm.em.fork();
-  const allChatroomLinkedToUser = allMessages.map((data) => data.chatroom);
-  const allUniqueChatrooms = allChatroomLinkedToUser.filter((data, index) => {
-    return allChatroomLinkedToUser.indexOf(data) === index;
-  });
 
-  const latestMessageForEachChatroom = await Promise.all(
-    allUniqueChatrooms.map(async (chatroom) => {
-      const latestMsg = await em.findOne(
-        Message,
-        {
-          chatroom: chatroom,
-        },
-        { orderBy: { created_at: "DESC" } }
-      );
-      return latestMsg;
-    })
-  );
+  const allChatroomIds = allMessages.map((data) => data.chatroom);
+  const allUniqueChatroomIds = Array.from(new Set(allChatroomIds));
+
+  const latestMessages = await em
+    .createQueryBuilder(Message, "m0")
+    .select(["m0.*"]) //selects all column from msg table
+    .where({ chatroom: { $in: allUniqueChatroomIds } })
+    .andWhere(
+      `m0.created_at = (SELECT MAX(m1.created_at) FROM message as m1 WHERE m1.chatroom_id = m0.chatroom_id)`
+    )
+    .orderBy({ "m0.created_at": "DESC" })
+    .getResult();
 
   const formattedLatestMessage: formattedMessageInterface[] =
-    latestMessageForEachChatroom.map((data) => {
+    latestMessages.map((data) => {
       return {
         chatroom_id: data?.chatroom.id,
         message: data?.text,
