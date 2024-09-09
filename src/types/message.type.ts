@@ -11,3 +11,8 @@ export interface createMessageDtoType {
 export interface getAllMessageByChatroomIdDtoType {
   chatroom_id: string;
 }
+
+export interface formattedMessageInterface {
+  chatroom_id: string | undefined;
+  message: string | undefined;
+}

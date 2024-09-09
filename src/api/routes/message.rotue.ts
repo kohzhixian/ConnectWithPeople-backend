@@ -14,4 +14,9 @@ router.get(
   messageController.getAllMessageLinkedToUser
 );
 
+router.get(
+  "/getLatestMsgForAllChatroomLinkedToUser",
+  messageController.getLatestMsgForAllChatroomLinkedToUser
+);
+
 export default router;

@@ -1,16 +1,16 @@
 import { EntityManager, MikroORM } from "@mikro-orm/mysql";
+import { StatusCode } from "../../constants/global/global.constants";
+import { MessageStatus } from "../../constants/message/message.constants";
+import { Chatroom } from "../../entities/Chatroom.entity";
+import { Message } from "../../entities/Message.entity";
+import { User } from "../../entities/User.entity";
 import databaseLoader from "../../loaders/database.loader";
+import { HttpError } from "../../middleware/httpError.middleware";
 import {
   createMessageDtoType,
-  getAllMessageByChatroomIdDtoType,
+  formattedMessageInterface,
 } from "../../types/message.type";
-import { User } from "../../entities/User.entity";
-import { HttpError } from "../../middleware/httpError.middleware";
-import { StatusCode } from "../../constants/global/global.constants";
-import { Message } from "../../entities/Message.entity";
-import { MessageStatus } from "../../constants/message/message.constants";
 import to from "../../utils/promiseHelpers";
-import { Chatroom } from "../../entities/Chatroom.entity";
 
 async function createMessage(createMessageDto: createMessageDtoType) {
   const orm: MikroORM = await databaseLoader();
@@ -75,6 +75,7 @@ async function getAllMessageLinkedToUser(userId: string) {
     chatroom: allChatroomLinkedToUser,
   });
 
+  await orm.close();
   return allMessages;
 }
 
@@ -98,8 +99,41 @@ async function getAllMessageByChatroomId(chatroom_id: string) {
   return allMessages;
 }
 
+async function getLatestMsgForAllChatroomLinkedToUser(allMessages: Message[]) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+  const allChatroomLinkedToUser = allMessages.map((data) => data.chatroom);
+  const allUniqueChatrooms = allChatroomLinkedToUser.filter((data, index) => {
+    return allChatroomLinkedToUser.indexOf(data) === index;
+  });
+
+  const latestMessageForEachChatroom = await Promise.all(
+    allUniqueChatrooms.map(async (chatroom) => {
+      const latestMsg = await em.findOne(
+        Message,
+        {
+          chatroom: chatroom,
+        },
+        { orderBy: { created_at: "DESC" } }
+      );
+      return latestMsg;
+    })
+  );
+
+  const formattedLatestMessage: formattedMessageInterface[] =
+    latestMessageForEachChatroom.map((data) => {
+      return {
+        chatroom_id: data?.chatroom.id,
+        message: data?.text,
+      };
+    });
+  await orm.close();
+  return formattedLatestMessage;
+}
+
 export default {
   createMessage,
   getAllMessageLinkedToUser,
   getAllMessageByChatroomId,
+  getLatestMsgForAllChatroomLinkedToUser,
 };

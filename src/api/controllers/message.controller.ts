@@ -48,8 +48,25 @@ async function getAllMessageByChatroomId(
   }
 }
 
+async function getLatestMsgForAllChatroomLinkedToUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user_id = await getUserIdFromToken(req, res);
+  try {
+    const allMessages = await messageService.getAllMessageLinkedToUser(user_id);
+    const response =
+      await messageService.getLatestMsgForAllChatroomLinkedToUser(allMessages);
+    res.status(StatusCode.OK).send(response);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 export default {
   createMessage,
   getAllMessageLinkedToUser,
   getAllMessageByChatroomId,
+  getLatestMsgForAllChatroomLinkedToUser,
 };
