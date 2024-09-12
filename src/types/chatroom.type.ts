@@ -12,5 +12,5 @@ export interface formattedChatroomMessageType {
 }
 
 export interface chatroomDetailsType {
-  [chatroomId: string]: formattedChatroomMessageType[];
+  [chatroomName: string]: formattedChatroomMessageType[];
 }

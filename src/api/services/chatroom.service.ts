@@ -109,7 +109,7 @@ async function getChatroomDetailsById(chatroomId: string) {
     });
 
   const chatroomDetails: chatroomDetailsType = {
-    [existingChatroom.id]: formattedChatroomMessages,
+    [existingChatroom.chatroom_name]: formattedChatroomMessages,
   };
 
   await orm.close();
