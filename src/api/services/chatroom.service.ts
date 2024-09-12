@@ -105,6 +105,7 @@ async function getChatroomDetailsById(chatroomId: string) {
         status: data.status,
         updated_at: dayjs(data.updated_at).toISOString(),
         username: userObj.username,
+        id: data.id,
       };
     });
 
