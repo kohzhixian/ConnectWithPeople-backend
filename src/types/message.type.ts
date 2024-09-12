@@ -8,11 +8,9 @@ export interface createMessageDtoType {
   createMessageReqBody: createMessageReqBodyType;
 }
 
-export interface getAllMessageByChatroomIdDtoType {
-  chatroom_id: string;
-}
-
 export interface formattedMessageInterface {
   chatroom_id: string | undefined;
   message: string | undefined;
+  sender: string | undefined;
+  date: string | undefined;
 }

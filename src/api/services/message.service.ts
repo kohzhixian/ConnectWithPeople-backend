@@ -11,6 +11,7 @@ import {
   formattedMessageInterface,
 } from "../../types/message.type";
 import to from "../../utils/promiseHelpers";
+import dayjs from "dayjs";
 
 async function createMessage(createMessageDto: createMessageDtoType) {
   const orm: MikroORM = await databaseLoader();
@@ -116,11 +117,18 @@ async function getLatestMsgForAllChatroomLinkedToUser(allMessages: Message[]) {
     .orderBy({ "m0.created_at": "DESC" })
     .getResult();
 
+  // populate the user obj
+  await em.populate(latestMessages, ["user"]);
+
   const formattedLatestMessage: formattedMessageInterface[] =
     latestMessages.map((data) => {
+      const userObj = data.user;
+
       return {
         chatroom_id: data?.chatroom.id,
         message: data?.text,
+        sender: userObj.username,
+        date: dayjs(data.created_at).toISOString(),
       };
     });
   await orm.close();
