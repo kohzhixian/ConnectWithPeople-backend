@@ -33,7 +33,7 @@ async function getChatroomDetailsById(
   res: Response,
   next: NextFunction
 ) {
-  const chatroomId = req.body.chatroomId;
+  const chatroomId = String(req.query.chatroomId);
   try {
     const response = await chatroomService.getChatroomDetailsById(chatroomId);
     res.status(StatusCode.OK).send(response);
