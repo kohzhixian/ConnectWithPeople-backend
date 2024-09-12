@@ -28,7 +28,22 @@ async function getAllChatroomByUserId(
   }
 }
 
+async function getChatroomDetailsById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const chatroomId = req.body.chatroomId;
+  try {
+    const response = await chatroomService.getChatroomDetailsById(chatroomId);
+    res.status(StatusCode.OK).send(response);
+  } catch (err) {
+    return next(err);
+  }
+}
+
 export default {
   createChatroom,
   getAllChatroomByUserId,
+  getChatroomDetailsById,
 };

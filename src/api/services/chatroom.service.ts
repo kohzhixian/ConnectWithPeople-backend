@@ -1,10 +1,16 @@
 import { EntityManager, MikroORM } from "@mikro-orm/mysql";
-import databaseLoader from "../../loaders/database.loader";
-import { createChatroomDtoType } from "../../types/chatroom.type";
-import { User } from "../../entities/User.entity";
-import { HttpError } from "../../middleware/httpError.middleware";
+import dayjs from "dayjs";
 import { StatusCode } from "../../constants/global/global.constants";
 import { Chatroom } from "../../entities/Chatroom.entity";
+import { Message } from "../../entities/Message.entity";
+import { User } from "../../entities/User.entity";
+import databaseLoader from "../../loaders/database.loader";
+import { HttpError } from "../../middleware/httpError.middleware";
+import {
+  chatroomDetailsType,
+  createChatroomDtoType,
+  formattedChatroomMessageType,
+} from "../../types/chatroom.type";
 import to from "../../utils/promiseHelpers";
 
 async function createChatroom(createChatroomDto: createChatroomDtoType) {
@@ -73,7 +79,46 @@ async function getAllChatroomByUserId(userId: string) {
   return allChatroom;
 }
 
+async function getChatroomDetailsById(chatroomId: string) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+
+  const existingChatroom = await em.findOne(Chatroom, {
+    id: chatroomId,
+  });
+
+  if (!existingChatroom) {
+    throw new HttpError(StatusCode.NOT_FOUND, "Chatroom not found.");
+  }
+
+  const chatroomMessages = await em.find(Message, {
+    chatroom: existingChatroom,
+  });
+
+  await em.populate(chatroomMessages, ["user"]);
+
+  const formattedChatroomMessages: formattedChatroomMessageType[] =
+    chatroomMessages.map((data) => {
+      const userObj = data.user;
+      return {
+        text: data.text,
+        status: data.status,
+        updated_at: dayjs(data.updated_at).toISOString(),
+        username: userObj.username,
+      };
+    });
+
+  const chatroomDetails: chatroomDetailsType = {
+    [existingChatroom.id]: formattedChatroomMessages,
+  };
+
+  await orm.close();
+
+  return chatroomDetails;
+}
+
 export default {
   createChatroom,
   getAllChatroomByUserId,
+  getChatroomDetailsById,
 };

@@ -9,4 +9,9 @@ router.get(
   chatroomController.getAllChatroomByUserId
 );
 
+router.get(
+  "/getChatroomDetailsById",
+  chatroomController.getChatroomDetailsById
+);
+
 export default router;
