@@ -7,10 +7,10 @@ import { HttpError } from "./src/middleware/httpError.middleware";
 async function startServer() {
   require("dotenv").config({ path: ".env.dev" });
   const port = process.env.PORT;
+
   try {
     await databaseLoader();
-    const app = expressLoader();
-
+    const { app, server } = expressLoader();
     routesLoader(app);
 
     // format httpError into json format
@@ -23,7 +23,7 @@ async function startServer() {
           .json({ ErrorMessage: err.message || "Internal Server Error" });
       }
     });
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(`
       ====================================
       🚀 Server running on port ${port}!🚀
