@@ -71,8 +71,6 @@ export default function expressLoader() {
   });
 
   io.on("connection", (socket) => {
-    console.log("socket id: ", socket.id);
-
     socket.on("send-message", (data: formattedChatroomMessageType) => {
       // makes the server send the message to every socket
       socket.broadcast.emit("receive-message", data);
