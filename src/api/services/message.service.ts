@@ -44,7 +44,6 @@ async function createMessage(createMessageDto: createMessageDtoType) {
   newMessage.chatroom = existingChatroom;
 
   const [err, res] = await to(em.persistAndFlush(newMessage));
-
   if (err) {
     throw new HttpError(
       StatusCode.INTERNAL_SERVER_ERROR,
@@ -54,7 +53,7 @@ async function createMessage(createMessageDto: createMessageDtoType) {
 
   await orm.close();
 
-  return "message created";
+  return newMessage.id;
 }
 
 async function getAllMessageLinkedToUser(userId: string) {

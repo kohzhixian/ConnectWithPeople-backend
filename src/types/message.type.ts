@@ -1,4 +1,4 @@
-interface createMessageReqBodyType {
+export interface createMessageReqBodyType {
   text: string;
   chatroom_id: string;
 }
@@ -13,4 +13,13 @@ export interface formattedMessageInterface {
   message: string | undefined;
   sender: string | undefined;
   date: string | undefined;
+}
+
+export interface formattedChatroomMessageType {
+  text: string;
+  status: string;
+  updated_at: string;
+  username: string;
+  messageId: string;
+  userId: string;
 }
