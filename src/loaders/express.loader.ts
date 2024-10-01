@@ -71,9 +71,16 @@ export default function expressLoader() {
   });
 
   io.on("connection", (socket) => {
-    socket.on("send-message", (data: formattedChatroomMessageType) => {
-      // makes the server send the message to every socket
-      socket.broadcast.emit("receive-message", data);
+    socket.on("join-room", (room) => {
+      socket.join(room);
+    });
+    socket.on("send-message", (data: formattedChatroomMessageType, room) => {
+      if (room === "") {
+        // makes the server send the message to every socket
+        socket.broadcast.emit("receive-message", data);
+      } else {
+        socket.to(room).emit("receive-message", data);
+      }
     });
   });
 
