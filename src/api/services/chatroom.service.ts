@@ -79,6 +79,15 @@ async function getAllChatroomByUserId(userId: string) {
   return allChatroom;
 }
 
+const sortMessageByDate = (data: formattedChatroomMessageType[]) => {
+  data.sort((a: any, b: any) => {
+    const dateA = new Date(a.created_at).getTime();
+    const dateB = new Date(b.created_at).getTime();
+
+    return dateA - dateB;
+  });
+};
+
 async function getChatroomDetailsById(chatroomId: string) {
   const orm: MikroORM = await databaseLoader();
   const em: EntityManager = orm.em.fork();
@@ -104,11 +113,14 @@ async function getChatroomDetailsById(chatroomId: string) {
         text: data.text,
         status: data.status,
         updated_at: dayjs(data.updated_at).toISOString(),
+        created_at: dayjs(data.created_at).toISOString(),
         username: userObj.username,
         messageId: data.id,
         userId: userObj.id,
       };
     });
+  // sort message by date
+  sortMessageByDate(formattedChatroomMessages);
 
   const chatroomDetails: chatroomDetailsType = {
     [existingChatroom.chatroom_name]: formattedChatroomMessages,

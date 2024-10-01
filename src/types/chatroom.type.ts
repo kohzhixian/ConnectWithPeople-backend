@@ -8,6 +8,7 @@ export interface formattedChatroomMessageType {
   text: string;
   status: string;
   updated_at: string;
+  created_at: string;
   username: string;
   messageId: string;
   userId: string;
