@@ -53,6 +53,7 @@ async function createMessage(createMessageDto: createMessageDtoType) {
 
   await orm.close();
 
+  // return messsage id as it is needed for the socket function
   return newMessage.id;
 }
 
@@ -73,26 +74,6 @@ async function getAllMessageLinkedToUser(userId: string) {
 
   const allMessages = await em.find(Message, {
     chatroom: allChatroomLinkedToUser,
-  });
-
-  await orm.close();
-  return allMessages;
-}
-
-async function getAllMessageByChatroomId(chatroom_id: string) {
-  const orm: MikroORM = await databaseLoader();
-  const em: EntityManager = orm.em.fork();
-
-  const existingChatroom = await em.findOne(Chatroom, {
-    id: chatroom_id,
-  });
-
-  if (!existingChatroom) {
-    throw new HttpError(StatusCode.NOT_FOUND, "Chatroom not found");
-  }
-
-  const allMessages = await em.find(Message, {
-    chatroom: existingChatroom,
   });
 
   await orm.close();
@@ -137,6 +118,5 @@ async function getLatestMsgForAllChatroomLinkedToUser(allMessages: Message[]) {
 export default {
   createMessage,
   getAllMessageLinkedToUser,
-  getAllMessageByChatroomId,
   getLatestMsgForAllChatroomLinkedToUser,
 };

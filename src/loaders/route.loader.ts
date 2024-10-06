@@ -3,7 +3,7 @@ import authRoute from "../api/routes/auth.route";
 import jwtMiddleware from "../middleware/jwt.middleware";
 import testProtectedRoute from "../api/routes/testProtected.route";
 import contactRoute from "../api/routes/contact.route";
-import messageRoute from "../api/routes/message.rotue";
+import messageRoute from "../api/routes/message.route";
 import chatroomRoute from "../api/routes/chatroom.route";
 
 export default function routesLoader(app: Express) {
