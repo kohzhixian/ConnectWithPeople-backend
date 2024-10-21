@@ -51,7 +51,7 @@ async function createChatroom(createChatroomDto: createChatroomDtoType) {
     );
   }
   await orm.close();
-  return "Chatroom created";
+  return newChatroom.id;
 }
 
 async function getAllChatroomByUserId(userId: string) {
