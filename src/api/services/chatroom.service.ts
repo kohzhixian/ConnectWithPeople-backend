@@ -17,31 +17,26 @@ async function createChatroom(createChatroomDto: createChatroomDtoType) {
   const orm: MikroORM = await databaseLoader();
   const em: EntityManager = orm.em.fork();
 
-  const userIds = createChatroomDto.users;
+  const userPhoneNum = createChatroomDto.userPhoneNum;
 
   // fetch all users in chatroom
   const usersInChatroom = await em.find(User, {
-    id: { $in: createChatroomDto.users },
+    phone_num: { $in: userPhoneNum },
   });
+
+  // checks if added user exists
+  if (usersInChatroom.length !== userPhoneNum.length) {
+    throw new HttpError(StatusCode.NOT_FOUND, "An added user does not exist");
+  }
 
   if (!usersInChatroom) {
     throw new HttpError(StatusCode.NOT_FOUND, "No users found.");
   }
 
-  // create a set of existing user ids for fast lookup
-  const existingUserIds = new Set(usersInChatroom.map((data) => data.id));
-
   const newChatroom = new Chatroom(
     createChatroomDto.chatroom_name,
     createChatroomDto.chatroom_icon
   );
-
-  // check if provided users ids exist
-  for (const id of userIds) {
-    if (!existingUserIds.has(id)) {
-      throw new HttpError(StatusCode.NOT_FOUND, "An added user does not exist");
-    }
-  }
 
   for (const user of usersInChatroom) {
     newChatroom.users.add(user);
