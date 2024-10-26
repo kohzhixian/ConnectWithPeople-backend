@@ -7,8 +7,8 @@ import getUserIdFromToken from "../../utils/getUserIdFromToken";
 async function createChatroom(req: Request, res: Response, next: NextFunction) {
   const createChatroomDto = req.body as createChatroomDtoType;
   try {
-    const response = await chatroomService.createChatroom(createChatroomDto);
-    res.status(StatusCode.OK).send(response);
+    const chatroomId = await chatroomService.createChatroom(createChatroomDto);
+    res.status(StatusCode.OK).send({ chatroomId: chatroomId });
   } catch (err) {
     return next(err);
   }
