@@ -82,6 +82,10 @@ export default function expressLoader() {
         socket.to(room).emit("receive-message", data);
       }
     });
+    socket.on("new-chatroom", (data, room) => {
+      console.log("data inside socket: ", data);
+      socket.to(room).emit("new-chatroom", data);
+    });
   });
 
   // respond to all preflight OPTIONS requests for any path with appropriate CORS headers
