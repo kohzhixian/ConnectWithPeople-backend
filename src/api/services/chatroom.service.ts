@@ -8,6 +8,7 @@ import databaseLoader from "../../loaders/database.loader";
 import { HttpError } from "../../middleware/httpError.middleware";
 import {
   chatroomDetailsType,
+  chatroomUsersDataType,
   createChatroomDtoType,
   formattedChatroomMessageType,
 } from "../../types/chatroom.type";
@@ -112,6 +113,7 @@ async function getChatroomDetailsById(chatroomId: string) {
         username: userObj.username,
         messageId: data.id,
         userId: userObj.id,
+        phoneNumber: userObj.phone_num,
       };
     });
   // sort message by date
@@ -126,8 +128,53 @@ async function getChatroomDetailsById(chatroomId: string) {
   return chatroomDetails;
 }
 
+async function checkIfChatroomExist(userId: string) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+  const existingChatrooms = await getAllChatroomByUserId(userId);
+  if (!existingChatrooms) {
+    throw new HttpError(StatusCode.NOT_FOUND, "No chatroom found.");
+  }
+
+  // const allUsersLinkedToChatroom = await
+}
+
+async function getUsersInChatroom(chatroomId: string) {
+  const orm: MikroORM = await databaseLoader();
+  const em: EntityManager = orm.em.fork();
+
+  const existingChatroom = await em.findOne(
+    Chatroom,
+    {
+      id: chatroomId,
+    },
+    { populate: ["users"] }
+  );
+
+  const users = existingChatroom?.users.getItems();
+
+  let formattedUserData: chatroomUsersDataType[] = [];
+
+  if (users && users.length !== 0) {
+    users.forEach((data) => {
+      const userObj: chatroomUsersDataType = {
+        name: data.name,
+        phoneNum: data.phone_num,
+        userId: data.id,
+        username: data.username,
+      };
+
+      formattedUserData.push(userObj);
+    });
+  }
+
+  return formattedUserData;
+}
+
 export default {
   createChatroom,
   getAllChatroomByUserId,
   getChatroomDetailsById,
+  checkIfChatroomExist,
+  getUsersInChatroom,
 };

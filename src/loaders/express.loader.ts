@@ -7,6 +7,16 @@ import { Server, Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
 import { formattedChatroomMessageType } from "../types/message.type";
 
+interface ConnectedUsersInterface {
+  [phoneNum: number]: string;
+}
+
+interface SocketNewChatroomData {
+  chatroom_name: string;
+  chatroom_icon: string;
+  userPhoneNum: number[];
+}
+
 export default function expressLoader() {
   require("dotenv").config({ path: ".env.dev" });
   const app = express();
@@ -49,7 +59,7 @@ export default function expressLoader() {
         String(process.env.JWT_TOKEN_SECRET),
         (err, decoded) => {
           if (err) {
-            console.log("JWT verification failed: ", err);
+            console.error("JWT verification failed: ", err);
             return next(new Error("Authentication error") as ExtendedError);
           }
 
@@ -58,7 +68,7 @@ export default function expressLoader() {
         }
       );
     } else {
-      console.log("No valid token provided");
+      console.error("No valid token provided");
       return next(new Error("Authentication error") as ExtendedError);
     }
   });
@@ -70,21 +80,35 @@ export default function expressLoader() {
     console.error(err.context);
   });
 
+  const connectedUsers: ConnectedUsersInterface = {};
+
   io.on("connection", (socket) => {
-    socket.on("join-room", (room) => {
-      socket.join(room);
+    // when a user connects, the client send its phone number
+    socket.on("register-phone", (phoneNum) => {
+      connectedUsers[phoneNum] = socket.id;
     });
-    socket.on("send-message", (data: formattedChatroomMessageType, room) => {
-      if (room === "") {
-        // makes the server send the message to every socket
-        socket.broadcast.emit("receive-message", data);
-      } else {
-        socket.to(room).emit("receive-message", data);
+
+    socket.on(
+      "send-message",
+      (data: formattedChatroomMessageType, phoneNumberArr: number[]) => {
+        phoneNumberArr.forEach((phoneNum) => {
+          const socketId = connectedUsers[phoneNum];
+          if (socketId) {
+            io.to(socketId).emit("receive-message", data);
+          }
+        });
       }
-    });
-    socket.on("new-chatroom", (data, room) => {
-      console.log("data inside socket: ", data);
-      socket.to(room).emit("new-chatroom", data);
+    );
+    socket.on("new-chatroom", (chatroomData: SocketNewChatroomData) => {
+      chatroomData.userPhoneNum.forEach((phone) => {
+        const socketId = connectedUsers[phone];
+        if (socketId) {
+          io.to(socketId).emit("new-chatroom", chatroomData);
+          console.log(
+            `Emitting "new-chatroom" to phone=${phone}, socketId=${socketId}`
+          );
+        }
+      });
     });
   });
 

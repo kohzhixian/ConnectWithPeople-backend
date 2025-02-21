@@ -72,8 +72,10 @@ async function getAllMessageLinkedToUser(userId: string) {
 
   const allChatroomLinkedToUser = existingUser.chatrooms.getItems();
 
+  const allChatroomIds = allChatroomLinkedToUser.map((data) => data.id);
+
   const allMessages = await em.find(Message, {
-    chatroom: allChatroomLinkedToUser,
+    chatroom: { id: { $in: allChatroomIds } },
   });
 
   await orm.close();
