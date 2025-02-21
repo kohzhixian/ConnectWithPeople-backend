@@ -84,6 +84,7 @@ export default function expressLoader() {
 
   io.on("connection", (socket) => {
     // when a user connects, the client send its phone number
+    // The phone number will then be linked to a socket id
     socket.on("register-phone", (phoneNum) => {
       connectedUsers[phoneNum] = socket.id;
     });
@@ -99,10 +100,13 @@ export default function expressLoader() {
         });
       }
     );
+    //
     socket.on("new-chatroom", (chatroomData: SocketNewChatroomData) => {
       chatroomData.userPhoneNum.forEach((phone) => {
+        // We get the socket id of the user phone number that is being passed in by the chatroom data
         const socketId = connectedUsers[phone];
         if (socketId) {
+          // A new chatroom is then creaated with all the socket id taht we get using the user phone number
           io.to(socketId).emit("new-chatroom", chatroomData);
         }
       });
