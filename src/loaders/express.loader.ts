@@ -104,9 +104,6 @@ export default function expressLoader() {
         const socketId = connectedUsers[phone];
         if (socketId) {
           io.to(socketId).emit("new-chatroom", chatroomData);
-          console.log(
-            `Emitting "new-chatroom" to phone=${phone}, socketId=${socketId}`
-          );
         }
       });
     });
