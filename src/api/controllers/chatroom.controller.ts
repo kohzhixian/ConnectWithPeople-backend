@@ -65,7 +65,6 @@ async function getUsersInChatroom(
     const chatroomId = String(req.query.chatroomId);
     const response = await chatroomService.getUsersInChatroom(chatroomId);
 
-    console.log("response: ", response);
     res.status(StatusCode.OK).send(response);
   } catch (err) {
     return next(err);
