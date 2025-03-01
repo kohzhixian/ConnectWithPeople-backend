@@ -17,9 +17,13 @@ async function addContact(addContactDto: AddContactDtoType) {
   const em: EntityManager = orm.em.fork();
 
   // check if logged in user exists
-  const loggedInUser = await em.findOne(User, {
-    id: addContactDto.userId,
-  });
+  const loggedInUser = await em.findOne(
+    User,
+    {
+      id: addContactDto.userId,
+    },
+    { populate: ["contacts"] }
+  );
 
   if (!loggedInUser) {
     throw new HttpError(StatusCode.NOT_FOUND, "User not found");

@@ -12,7 +12,7 @@ async function addContact(req: Request, res: Response, next: NextFunction) {
       addContactReqBody: addContactReqBody,
       userId: userId,
     });
-    res.status(StatusCode.OK).send(response);
+    res.status(StatusCode.OK).send({ message: response });
   } catch (err) {
     return next(err);
   }
