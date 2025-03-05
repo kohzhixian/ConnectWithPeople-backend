@@ -128,8 +128,17 @@ async function getChatroomDetailsById(chatroomId: string) {
   return chatroomDetails;
 }
 
-const checkForDuplicate = (chatrooms: Chatroom[]) => {
-  return new Set(chatrooms).size !== chatrooms.length;
+const findExistingChatroom = (chatrooms: Chatroom[]) => {
+  const seeen = new Set<string>();
+  for (const room of chatrooms) {
+    if (seeen.has(room.id)) {
+      return room;
+    } else {
+      seeen.add(room.id);
+    }
+  }
+
+  return undefined;
 };
 
 async function checkIfChatroomExist(phoneNumbers: number[]) {
@@ -142,7 +151,7 @@ async function checkIfChatroomExist(phoneNumbers: number[]) {
   const existingUsers = await em
     .createQueryBuilder(User, "user")
     .leftJoinAndSelect("user.chatrooms", "chatrooms")
-    .where({ phone_num: { $in: phoneNumbers } })
+    .where({ phone_num: { $in: phoneNumbers || [] } })
     .getResult();
 
   let sameChatroomArray: Chatroom[] = [];
@@ -151,7 +160,7 @@ async function checkIfChatroomExist(phoneNumbers: number[]) {
     sameChatroomArray = [...sameChatroomArray, ...chatroom];
   });
 
-  return checkForDuplicate(sameChatroomArray);
+  return findExistingChatroom(sameChatroomArray);
 }
 
 async function getUsersInChatroom(chatroomId: string) {

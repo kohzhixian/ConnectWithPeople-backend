@@ -14,7 +14,10 @@ router.get(
   chatroomController.getChatroomDetailsById
 );
 
-router.get("/check-if-chatroom-exist", chatroomController.checkIfChatroomExist);
+router.post(
+  "/check-if-chatroom-exist",
+  chatroomController.checkIfChatroomExist
+);
 
 router.get("/get-users-in-chatroom", chatroomController.getUsersInChatroom);
 

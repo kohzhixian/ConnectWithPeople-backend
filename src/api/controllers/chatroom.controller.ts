@@ -48,6 +48,7 @@ async function checkIfChatroomExist(
   next: NextFunction
 ) {
   const phoneNumbers = req.body.phoneNumbers;
+
   try {
     const response = await chatroomService.checkIfChatroomExist(phoneNumbers);
     res.status(StatusCode.OK).send(response);
