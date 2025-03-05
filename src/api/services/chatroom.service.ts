@@ -128,15 +128,30 @@ async function getChatroomDetailsById(chatroomId: string) {
   return chatroomDetails;
 }
 
-async function checkIfChatroomExist(userId: string) {
+const checkForDuplicate = (chatrooms: Chatroom[]) => {
+  return new Set(chatrooms).size !== chatrooms.length;
+};
+
+async function checkIfChatroomExist(phoneNumbers: number[]) {
+  // pass in phone number array
+  // get the user id using phone number
+  // get all the chatroom id that is linked to the users
+  // see if there is any same chatroom id for the 2 users
   const orm: MikroORM = await databaseLoader();
   const em: EntityManager = orm.em.fork();
-  const existingChatrooms = await getAllChatroomByUserId(userId);
-  if (!existingChatrooms) {
-    throw new HttpError(StatusCode.NOT_FOUND, "No chatroom found.");
-  }
+  const existingUsers = await em
+    .createQueryBuilder(User, "user")
+    .leftJoinAndSelect("user.chatrooms", "chatrooms")
+    .where({ phone_num: { $in: phoneNumbers } })
+    .getResult();
 
-  // const allUsersLinkedToChatroom = await
+  let sameChatroomArray: Chatroom[] = [];
+  existingUsers.map((user) => {
+    const chatroom = user.chatrooms.getItems();
+    sameChatroomArray = [...sameChatroomArray, ...chatroom];
+  });
+
+  return checkForDuplicate(sameChatroomArray);
 }
 
 async function getUsersInChatroom(chatroomId: string) {
